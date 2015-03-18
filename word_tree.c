@@ -217,8 +217,8 @@ void tree_recurse(word_tree *wt, char *cur)
 
 void top_10_results(char *x, word_hash *wh)
 {
-	char *accumulate = strdup(x);
 	char *find = strtok(x, " ");
+	char *accumulate = strdup(x);
 	word_tree *found = retreive_first_word(wh, find);
 
 	if (found == NULL)
@@ -237,6 +237,8 @@ void top_10_results(char *x, word_hash *wh)
 			printf("Please check your phrase.\n");
 			return;
 		}
+		strcat(accumulate," ");
+		strcat(accumulate, found->name->name);
 		find = strtok(NULL, " "); 
 	}
 
