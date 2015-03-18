@@ -217,8 +217,8 @@ void tree_recurse(word_tree *wt, char *cur)
 
 void top_10_results(char *x, word_hash *wh)
 {
-	char *find = strtok(x, " ");
 	char *accumulate = strdup(x);
+	char *find = strtok(x, " ");
 	word_tree *found = retreive_first_word(wh, find);
 
 	if (found == NULL)
