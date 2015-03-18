@@ -10,11 +10,9 @@ A simple Autofill Simulator composed of the following parts:
 
 Here is the transcript for the test of the hashing function on "/usr/share/dict/words":
 
-nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ gcc -c word_tree.c hash.c
-
-nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ gcc word_tree.o hash.o -o test
-
-nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ ./test
+	nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ gcc -c word_tree.c hash.c
+	nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ gcc word_tree.o hash.o -o test
+	nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ ./test
 
 	int main(int argc, char **argv)
 	{
@@ -55,8 +53,7 @@ nsit-dhcp-205-208-007-109:Autofill Simulator legmonkey$ ./test
 		fclose(inf);
 	}
 
-max value: 2, number of ones: 235874, number of twos: 12, number of threes and above: 0.
-
-total collisions: 12. Number of inputs: 235886.
+	max value: 2, number of ones: 235874, number of twos: 12, number of threes and above: 0.
+	total collisions: 12. Number of inputs: 235886.
 
 The texts were taken from Mark Stoehr's Lab 2, and the get_sentence code is a modified version of CMSC162's get_word method.
