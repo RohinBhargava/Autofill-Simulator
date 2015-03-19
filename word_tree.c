@@ -110,7 +110,11 @@ void insert_first_word(word_hash *wh, char *name)
 
 word_tree *retreive_first_word(word_hash *wh, char *name)
 {
-	return wh->hash[hash(name) & ((1 << 31) -1)];
+	word_tree *x = wh->hash[hash(name) & ((1 << 31) -1)];
+	if (x != NULL)
+		while (strcmp(x->name->name, name) != 0)
+			x = x->left;
+	return x;
 }
 
 word_tree *child_word(word_tree* wt, char *name, int n)
@@ -119,10 +123,7 @@ word_tree *child_word(word_tree* wt, char *name, int n)
 	for (i = 0; i < wt->tree_count; ++i)
 	{
 		if (strncmp(name, wt->children[i]->name->name, n) == 0)
-		{
-			++wt->children[i]->name->score;
 			return wt->children[i];
-		}
 	}
 	return NULL;
 }
@@ -136,6 +137,11 @@ word_tree *insert_word(word_tree *wt, char *name)
 		current = init_word_tree(init_word(name));
 		wt->children[wt->tree_count] = current;
 		++wt->tree_count;
+	}
+
+	else
+	{
+		++current->name->score;
 		wt->children = merge_sort(wt->children, wt->tree_count);
 	}
 
@@ -200,6 +206,28 @@ void parse_file(FILE * inf, word_hash *wh)
     }
 }
 
+word_tree **lister(word_tree* wt, char *name, int n)
+{
+	int list_size = 10;
+	word_tree **list = calloc(list_size, sizeof(word_tree *));
+	int i;
+	int j = 0;
+	for (i = 0; i < wt->tree_count; ++i)
+	{
+		if (strncmp(name, wt->children[i]->name->name, n) == 0)
+		{
+			list[j] = wt->children[i];
+			++j;
+			if (j == list_size)
+			{
+				list_size *= 2;
+				realloc(list, list_size * sizeof(word_tree *));
+			}
+		}
+	}
+	return list;
+}
+
 void tree_recurse(word_tree *wt, char *cur)
 {
 	char *new_cur = strdup(cur);
@@ -218,6 +246,7 @@ void tree_recurse(word_tree *wt, char *cur)
 void top_10_results(char *x, word_hash *wh)
 {
 	char *find = strtok(x, " ");
+	char *look_ahead;
 	char *accumulate = strdup(x);
 	word_tree *found = retreive_first_word(wh, find);
 
@@ -228,23 +257,59 @@ void top_10_results(char *x, word_hash *wh)
 	}
 
 	find = strtok(NULL, " ");
+	word_tree **list = NULL;
 
 	while(find != NULL)
 	{
-		found = child_word(found, find, strlen(find));
-		if (found == NULL)
+		look_ahead = strtok(NULL, " ");
+
+		if (look_ahead != NULL)
 		{
-			printf("Please check your phrase.\n");
-			return;
+			found = child_word(found, find, strlen(find));
+			if (found == NULL || strcmp(found->name->name, find) != 0)
+			{
+				printf("Please check your phrase.\n");
+				return;
+			}
+			strcat(accumulate," ");
+			strcat(accumulate, found->name->name);
 		}
-		strcat(accumulate," ");
-		strcat(accumulate, found->name->name);
-		find = strtok(NULL, " "); 
+
+		else
+			list = lister(found, find, strlen(find));
+
+		find = look_ahead;
 	}
 
 	int i;
-	for (i = 0; i < found->tree_count; ++i)
-		tree_recurse(found->children[i], accumulate);
+
+	if (list == NULL)
+	{
+		for (i = 0; i < found->tree_count; ++i)
+			tree_recurse(found->children[i], accumulate);
+	}
+
+	else
+	{
+		int j = 0;
+		while(list[j] != NULL)
+		{	
+			found = list[j];
+			char *temp = strdup(accumulate);
+			strcat(temp," ");
+			strcat(temp, found->name->name);
+			for (i = 0; i < found->tree_count; ++i)
+				tree_recurse(found->children[i], temp);
+			++j;
+			free(list[j]);
+			free(temp);
+		}
+	}
+
+	free(find);
+	free(look_ahead);
+	free(accumulate);
+	free(found);
 }
 
 int main(int argc, char **argv)
