@@ -75,7 +75,13 @@ word_tree *init_word_tree(word* w)
 
 void free_word_tree(word_tree* wt)
 {
-	free(wt->children);
+	if(wt->tree_count > 0)
+	{
+		int i;
+		for (i = 0; i < wt->tree_count; ++i)
+			free_word_tree(wt->children[i]);
+		free(wt->children);
+	}
 	while (wt->left != NULL)
 		free_word_tree(wt->left);
 	free(wt);
@@ -282,6 +288,7 @@ void top_10_results(char *x, word_hash *wh)
 	}
 
 	int i;
+	int j = 0;
 
 	if (list == NULL)
 	{
@@ -291,7 +298,6 @@ void top_10_results(char *x, word_hash *wh)
 
 	else
 	{
-		int j = 0;
 		while(list[j] != NULL)
 		{	
 			found = list[j];
@@ -301,15 +307,11 @@ void top_10_results(char *x, word_hash *wh)
 			for (i = 0; i < found->tree_count; ++i)
 				tree_recurse(found->children[i], temp);
 			++j;
-			free(list[j]);
 			free(temp);
 		}
 	}
 
-	free(find);
-	free(look_ahead);
 	free(accumulate);
-	free(found);
 }
 
 int main(int argc, char **argv)
