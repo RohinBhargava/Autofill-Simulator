@@ -109,7 +109,7 @@ void free_word_hash(word_hash *wh)
 void insert_first_word(word_hash *wh, char *name)
 {
 	word_tree *new_word_tree = init_word_tree(init_word(name));
-	long look = (hash(name) & ((1 << 31) -1));
+	long look = (hash(name) & BIT_MASK);
 	if (wh->hash[look] == NULL)
 			wh->hash[look] = new_word_tree;
 	else if (strcmp(wh->hash[look]->name->name, name) == 0)
@@ -120,7 +120,7 @@ void insert_first_word(word_hash *wh, char *name)
 
 word_tree *retreive_first_word(word_hash *wh, char *name)
 {
-	word_tree *x = wh->hash[hash(name) & ((1 << 31) -1)];
+	word_tree *x = wh->hash[hash(name) & BIT_MASK];
 	if (x != NULL)
 		while (strcmp(x->name->name, name) != 0)
 			x = x->left;
@@ -168,7 +168,7 @@ bool isacceptedchar(char c)
 
 char *get_sentence(FILE * inf)
 {
-	char *buf = (char *) malloc(100 * sizeof(char));
+    char *buf = (char *) malloc(100 * sizeof(char));
     int buf_size = 100;
             
     char ch;
@@ -188,7 +188,7 @@ char *get_sentence(FILE * inf)
         if (index == buf_size) 
         {
             buf_size *= 2;
-        	buf = realloc(buf,buf_size * sizeof(char));
+        	buf = (char *) realloc(buf,buf_size * sizeof(char));
         }
     } while (isacceptedchar(ch = (char) fgetc(inf)) && ch != EOF);
     
@@ -231,7 +231,7 @@ word_tree **lister(word_tree* wt, char *name, int n)
 			if (j == list_size)
 			{
 				list_size *= 2;
-				realloc(list, list_size * sizeof(word_tree *));
+				list = (word_tree **) realloc(list, list_size * sizeof(word_tree *));
 			}
 		}
 	}
