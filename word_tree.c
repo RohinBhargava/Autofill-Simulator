@@ -75,16 +75,10 @@ word_tree *init_word_tree(word* w)
 
 void free_word_tree(word_tree* wt)
 {
-	if(wt->tree_count > 0)
-	{
-		int i;
-		for (i = 0; i < wt->tree_count; ++i)
-			free_word_tree(wt->children[i]);
-		free(wt->children);
-	}
-	while (wt->left != NULL)
-		free_word_tree(wt->left);
-	free(wt);
+	free(wt->children);
+	if (wt->left != NULL)
+		while (wt->left != NULL)
+			free_word_tree((wt = wt->left));
 }
 
 word_hash* init_word_hash()
@@ -157,7 +151,7 @@ word_tree *insert_word(word_tree *wt, char *name)
 
 bool isacceptedchar(char c)
 {
-	if (c != '.' && c != '!' && c != '?' && c != '\n' && c != EOF)
+	if (c != '.' && c != '!' && c != '?' && c != '\n' && c != '\t' && c != EOF)
 		return true;
 	return false;
 }
@@ -307,11 +301,8 @@ void top_10_results(char *x, word_hash *wh)
 			for (i = 0; i < found->tree_count; ++i)
 				tree_recurse(found->children[i], temp);
 			++j;
-			free(temp);
 		}
 	}
-
-	free(accumulate);
 }
 
 int main(int argc, char **argv)
