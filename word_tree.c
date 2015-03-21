@@ -109,7 +109,7 @@ void free_word_hash(word_hash *wh)
 void insert_first_word(word_hash *wh, char *name)
 {
 	word_tree *new_word_tree = init_word_tree(init_word(name));
-	long look = (hash(name) & BIT_MASK);
+	long look = (hash(name) & DICT_MASK);
 	if (wh->hash[look] == NULL)
 			wh->hash[look] = new_word_tree;
 	else if (strcmp(wh->hash[look]->name->name, name) == 0)
@@ -120,7 +120,7 @@ void insert_first_word(word_hash *wh, char *name)
 
 word_tree *retreive_first_word(word_hash *wh, char *name)
 {
-	word_tree *x = wh->hash[hash(name) & BIT_MASK];
+	word_tree *x = wh->hash[hash(name) & DICT_MASK];
 	if (x != NULL)
 		while (strcmp(x->name->name, name) != 0)
 			x = x->left;
